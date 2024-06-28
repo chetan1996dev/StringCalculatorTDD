@@ -3,9 +3,7 @@ class StringCalculator
   def add(input)
     return 0 if input.empty?
     
-    delimiter, numbers_string = extract_delimiter(input)
-    numbers = numbers_string.split(delimiter).map(&:to_i)
-
+    delimiter, numbers = extract_delimiter_and_numbers(input)
     validate_numbers(numbers)
 
     numbers.reduce(0, :+)
@@ -20,20 +18,13 @@ class StringCalculator
   end
 
   # Method to extract delimiter and numbers string
-  def extract_delimiter(input)
+  def extract_delimiter_and_numbers(input)
     if input.start_with?("//")
-      delimiters = input.scan(/\[(.*?)\]/).flatten
-      if delimiters.any?
-        delimiter = Regexp.union(delimiters)
-        numbers_string = input.split("\n", 2).last
-      else
-        delimiter = Regexp.escape(input[2])
-        numbers_string = input[4..]
-      end
+      delimiter = input.match(%r{//(.+)\n})[1].strip
     else
-      delimiter = /[,\n]/
-      numbers_string = input
+      delimiter =  ",|\n"
     end
+    numbers_string = input.gsub(%r{//(.+)\n}, "").split(/[#{delimiter}]/).map(&:to_i)
     [delimiter, numbers_string]
   end
 end
