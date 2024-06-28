@@ -22,8 +22,14 @@ class StringCalculator
   # Method to extract delimiter and numbers string
   def extract_delimiter(input)
     if input.start_with?("//")
-      delimiter = input[2]
-      numbers_string = input[4..]
+      delimiters = input.scan(/\[(.*?)\]/).flatten
+      if delimiters.any?
+        delimiter = Regexp.union(delimiters)
+        numbers_string = input.split("\n", 2).last
+      else
+        delimiter = Regexp.escape(input[2])
+        numbers_string = input[4..]
+      end
     else
       delimiter = /[,\n]/
       numbers_string = input
